@@ -317,6 +317,55 @@ export default function Home() {
           </a>
           <div style={{
             marginTop: 32,
+            padding: '24px',
+            background: 'rgba(255,255,255,0.05)',
+            borderRadius: '16px',
+            border: '2px solid rgba(255,255,255,0.1)',
+            textAlign: 'center',
+            animation: 'pulse 2s infinite',
+          }}>
+            <h3 style={{
+              color: '#fff',
+              fontSize: '1.4rem',
+              marginBottom: '16px',
+              fontWeight: 700,
+            }}>
+              🎁 Unterstütze das Projekt mit einem Geschenk
+            </h3>
+            <a
+              href="https://www.amazon.de/hz/wishlist/ls/2K3UPHK4UWCXP?ref_=wl_share"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="button"
+              style={{
+                background: 'linear-gradient(90deg, #ff9900 0%, #e47911 100%)',
+                color: '#fff',
+                borderRadius: 12,
+                padding: '16px 40px',
+                textDecoration: 'none',
+                boxShadow: '0 4px 16px rgba(255, 153, 0, 0.3)',
+                letterSpacing: '0.02em',
+                border: 'none',
+                fontWeight: 800,
+                fontSize: '1.2rem',
+                display: 'inline-block',
+                transform: 'scale(1)',
+                transition: 'all 0.3s ease',
+              }}
+              onMouseOver={(e) => {
+                e.currentTarget.style.transform = 'scale(1.05)';
+                e.currentTarget.style.boxShadow = '0 6px 20px rgba(255, 153, 0, 0.4)';
+              }}
+              onMouseOut={(e) => {
+                e.currentTarget.style.transform = 'scale(1)';
+                e.currentTarget.style.boxShadow = '0 4px 16px rgba(255, 153, 0, 0.3)';
+              }}
+            >
+              <span style={{color:'#fff', textShadow: '0 1px 2px rgba(0,0,0,0.1)'}}>Amazon</span> Wunschliste öffnen
+            </a>
+          </div>
+          <div style={{
+            marginTop: 32,
             color: '#bfc3c7',
             fontSize: '1.02rem',
             textAlign: 'center',
