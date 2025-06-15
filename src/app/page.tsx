@@ -72,7 +72,7 @@ export default function Home() {
       {/* Spenden-Banner */}
       <div style={{
         width: '100%',
-        background: 'linear-gradient(90deg, #fbbf24 0%, #38bdf8 100%)',
+        background: 'linear-gradient(90deg, var(--secondary) 0%, var(--primary) 100%)',
         color: '#232629',
         fontWeight: 700,
         fontSize: '1.18rem',
@@ -86,24 +86,22 @@ export default function Home() {
         top: 0,
         left: 0,
         right: 0,
-        borderBottom: '2px solid #38bdf8',
+        borderBottom: '2px solid var(--primary)',
+        animation: 'fadeIn 1.2s cubic-bezier(.4,0,.2,1)'
       }}>
         <span style={{marginRight: 12}}>💌 Unterstütze das Projekt anonym per Gutschein:</span>
         <a
           href="https://forms.gle/y6c3o8v5L9L7Sy79A"
           target="_blank"
           rel="noopener noreferrer"
+          className="button"
           style={{
             color: '#fff',
             background: '#232629',
-            borderRadius: 8,
-            padding: '8px 18px',
-            textDecoration: 'none',
+            marginLeft: 8,
             fontWeight: 800,
             fontSize: '1.08rem',
             boxShadow: '0 2px 8px rgba(0,0,0,0.10)',
-            marginLeft: 8,
-            transition: 'background 0.2s, color 0.2s',
             border: 'none',
             display: 'inline-block',
           }}
@@ -113,7 +111,7 @@ export default function Home() {
       </div>
       {/* Abstand für Fixed-Banner */}
       <div style={{height: 70}} />
-      <div style={{
+      <main style={{
         minHeight: '100vh',
         background: 'linear-gradient(135deg, #232629 0%, #2d3748 100%)',
         display: 'flex',
@@ -122,24 +120,22 @@ export default function Home() {
         justifyContent: 'center',
         padding: 16,
       }}>
-        <div style={{
-          background: 'rgba(255,255,255,0.04)',
-          padding: '40px 24px',
-          borderRadius: '18px',
-          boxShadow: '0 8px 32px 0 rgba(31, 38, 135, 0.18)',
+        <section className="card fade-in" style={{
+          padding: '48px 32px',
+          borderRadius: '22px',
           minWidth: '320px',
-          maxWidth: 420,
+          maxWidth: 440,
           width: '100%',
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
-          border: '1px solid rgba(255,255,255,0.08)',
-          backdropFilter: 'blur(4px)',
+          border: '1px solid rgba(255,255,255,0.10)',
+          marginBottom: 32,
         }}>
-          <h1 style={{ color: '#fff', fontSize: '2.5rem', fontWeight: 800, marginBottom: 0, letterSpacing: '-1px', textAlign: 'center' }}>free-epg.de</h1>
-          <p style={{ color: '#bfc3c7', fontSize: '1.15rem', marginTop: 10, marginBottom: 28, textAlign: 'center', fontWeight: 500 }}>
-            Kostenloser EPG für Deutsche TV Kanäle<br />
-            <span style={{ color: '#7dd3fc', fontWeight: 600 }}>XMLTV &amp; Rytec-Format</span>
+          <h1 style={{ color: '#fff', fontSize: '2.7rem', fontWeight: 900, marginBottom: 0, letterSpacing: '-1px', textAlign: 'center', textShadow: '0 2px 16px #23262955' }}>free-epg.de</h1>
+          <p style={{ color: '#bfc3c7', fontSize: '1.18rem', marginTop: 12, marginBottom: 32, textAlign: 'center', fontWeight: 500 }}>
+            Kostenloser EPG für deutsche TV-Kanäle<br />
+            <span style={{ color: 'var(--primary)', fontWeight: 700 }}>XMLTV &amp; Rytec-Format</span>
           </p>
           <input
             type="text"
@@ -173,47 +169,31 @@ export default function Home() {
             transition: 'background 0.3s, color 0.3s',
             opacity: copied ? 1 : 0.92
           }}>
-            {copied ? 'Kopiert!' : 'Success'}
+            {copied ? 'Kopiert!' : 'URL kopieren'}
           </div>
           <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', justifyContent: 'center', width: '100%' }}>
             <button
               onClick={handleCopy}
+              className="button"
               style={{
                 marginTop: 8,
-                padding: '10px 28px',
-                borderRadius: '8px',
-                border: 'none',
-                background: 'linear-gradient(90deg, #38bdf8 0%, #6366f1 100%)',
+                background: 'linear-gradient(90deg, var(--primary) 0%, var(--accent) 100%)',
                 color: '#fff',
-                fontWeight: 700,
-                fontSize: '1.08rem',
-                cursor: 'pointer',
-                boxShadow: '0 2px 8px rgba(0,0,0,0.07)',
-                transition: 'background 0.2s',
-                letterSpacing: '0.01em',
               }}
             >
-              Copy URL
+              URL kopieren
             </button>
             <a
               href={downloadUrl}
               download
               onClick={() => handleDownload('xmltv')}
+              className="button"
               style={{
                 marginTop: 8,
-                padding: '10px 28px',
-                borderRadius: '8px',
-                border: 'none',
-                background: 'linear-gradient(90deg, #fbbf24 0%, #f472b6 100%)',
+                background: 'linear-gradient(90deg, var(--secondary) 0%, #f472b6 100%)',
                 color: '#232629',
-                fontWeight: 700,
-                fontSize: '1.08rem',
-                cursor: 'pointer',
-                boxShadow: '0 2px 8px rgba(0,0,0,0.07)',
                 textDecoration: 'none',
                 display: 'inline-block',
-                letterSpacing: '0.01em',
-                transition: 'background 0.2s',
               }}
             >
               Download XMLTV
@@ -222,46 +202,42 @@ export default function Home() {
               href={rytecUrl}
               download
               onClick={() => handleDownload('rytec')}
+              className="button"
               style={{
                 marginTop: 8,
-                padding: '10px 28px',
-                borderRadius: '8px',
-                border: 'none',
-                background: 'linear-gradient(90deg, #a7f3d0 0%, #38bdf8 100%)',
+                background: 'linear-gradient(90deg, #a7f3d0 0%, var(--primary) 100%)',
                 color: '#232629',
-                fontWeight: 700,
-                fontSize: '1.08rem',
-                cursor: 'pointer',
-                boxShadow: '0 2px 8px rgba(0,0,0,0.07)',
                 textDecoration: 'none',
                 display: 'inline-block',
-                letterSpacing: '0.01em',
-                transition: 'background 0.2s',
               }}
             >
               Download Rytec XML
             </a>
             <button
               onClick={handleIPTVClick}
+              className="button"
               style={{
                 marginTop: 8,
-                padding: '10px 28px',
-                borderRadius: '8px',
-                border: 'none',
-                background: 'linear-gradient(90deg, #f87171 0%, #dc2626 100%)',
+                background: 'linear-gradient(90deg, #f87171 0%, var(--danger) 100%)',
                 color: '#fff',
-                fontWeight: 700,
-                fontSize: '1.08rem',
-                cursor: 'pointer',
-                boxShadow: '0 2px 8px rgba(0,0,0,0.07)',
-                textDecoration: 'none',
-                display: 'inline-block',
-                letterSpacing: '0.01em',
-                transition: 'background 0.2s',
               }}
             >
               IPTV Player öffnen
             </button>
+            <a
+              href="/tv"
+              download
+              className="button"
+              style={{
+                marginTop: 8,
+                background: 'linear-gradient(90deg, #818cf8 0%, #6366f1 100%)',
+                color: '#fff',
+                textDecoration: 'none',
+                display: 'inline-block',
+              }}
+            >
+              IPTV Playlist herunterladen
+            </a>
           </div>
           {showDisclaimer && (
             <div style={{
@@ -275,17 +251,18 @@ export default function Home() {
               alignItems: 'center',
               justifyContent: 'center',
               zIndex: 1000,
+              animation: 'fadeIn 0.5s cubic-bezier(.4,0,.2,1)'
             }}>
-              <div style={{
-                background: 'rgba(255, 255, 255, 0.95)',
-                padding: '24px',
-                borderRadius: '12px',
+              <div className="card fade-in" style={{
+                background: 'rgba(255, 255, 255, 0.98)',
+                padding: '28px',
+                borderRadius: '16px',
                 maxWidth: '500px',
                 width: '90%',
-                boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+                boxShadow: '0 4px 16px -1px rgba(0, 0, 0, 0.13)',
                 border: '1px solid rgba(255, 255, 255, 0.1)',
               }}>
-                <h2 style={{ marginBottom: '16px', color: '#1f2937' }}>Wichtiger Hinweis</h2>
+                <h2 style={{ marginBottom: '16px', color: '#1f2937', fontWeight: 800 }}>Wichtiger Hinweis</h2>
                 <p style={{ marginBottom: '16px', color: '#4b5563', lineHeight: '1.5' }}>
                   Die IPTV-Seite wird nicht von free-epg.de betrieben und steht in keinem Zusammenhang mit diesem Projekt. 
                   Wir übernehmen keine Verantwortung für den Inhalt der externen Seite.
@@ -293,28 +270,21 @@ export default function Home() {
                 <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>
                   <button
                     onClick={handleCloseDisclaimer}
+                    className="button"
                     style={{
-                      padding: '8px 16px',
-                      borderRadius: '6px',
-                      border: '1px solid #e5e7eb',
                       background: '#f3f4f6',
                       color: '#4b5563',
-                      cursor: 'pointer',
-                      transition: 'all 0.2s',
+                      border: '1px solid #e5e7eb',
                     }}
                   >
                     Abbrechen
                   </button>
                   <button
                     onClick={handleAcceptDisclaimer}
+                    className="button"
                     style={{
-                      padding: '8px 16px',
-                      borderRadius: '6px',
-                      border: 'none',
-                      background: 'linear-gradient(90deg, #f87171 0%, #dc2626 100%)',
+                      background: 'linear-gradient(90deg, #f87171 0%, var(--danger) 100%)',
                       color: '#fff',
-                      cursor: 'pointer',
-                      transition: 'all 0.2s',
                     }}
                   >
                     Weiter zur IPTV-Seite
@@ -327,45 +297,46 @@ export default function Home() {
             href="https://www.paypal.com/paypalme/michelfritzsch/5"
             target="_blank"
             rel="noopener noreferrer"
+            className="button"
             style={{
-              marginTop: 24,
-              display: 'inline-block',
+              marginTop: 28,
               background: 'linear-gradient(90deg, #ffc439 0%, #009cde 100%)',
               color: '#232629',
-              fontWeight: 700,
-              fontSize: '1.08rem',
               borderRadius: 8,
               padding: '12px 32px',
               textDecoration: 'none',
               boxShadow: '0 2px 8px rgba(0,0,0,0.07)',
               letterSpacing: '0.01em',
-              transition: 'background 0.2s',
               border: 'none',
+              fontWeight: 700,
+              fontSize: '1.08rem',
+              display: 'inline-block',
             }}
           >
             Projekt unterstützen via <span style={{color:'#003087'}}>PayPal</span>
           </a>
           <div style={{
-            marginTop: 28,
+            marginTop: 32,
             color: '#bfc3c7',
-            fontSize: '0.98rem',
+            fontSize: '1.02rem',
             textAlign: 'center',
-            lineHeight: 1.6,
+            lineHeight: 1.7,
             background: 'rgba(255,255,255,0.03)',
             borderRadius: 8,
-            padding: '12px 10px 8px 10px',
+            padding: '14px 12px 10px 12px',
             maxWidth: 340,
+            boxShadow: '0 1px 4px rgba(0,0,0,0.04)'
           }}>
             <b>Hinweis:</b> Das XMLTV-Format ist für die meisten IPTV- und Mediacenter-Apps geeignet.<br />
             Das Rytec-Format ist speziell für Enigma2/EPG-Importer und kompatible Receiver optimiert.
-            <div style={{ marginTop: 12, fontSize: '0.9rem', color: '#94a3b8' }}>
-              Besucher: {stats.visitors.toLocaleString()} | 
-              XMLTV Downloads: {stats.downloads.xmltv.toLocaleString()} | 
+            <div style={{ marginTop: 14, fontSize: '0.95rem', color: '#94a3b8', fontWeight: 500 }}>
+              Besucher: {stats.visitors.toLocaleString()} &nbsp;|&nbsp; 
+              XMLTV Downloads: {stats.downloads.xmltv.toLocaleString()} &nbsp;|&nbsp; 
               Rytec Downloads: {stats.downloads.rytec.toLocaleString()}
             </div>
           </div>
-        </div>
-      </div>
+        </section>
+      </main>
       <Analytics />
       <SpeedInsights />
     </>
