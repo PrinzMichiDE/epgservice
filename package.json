@@ -17,7 +17,8 @@
     "test:win32": "SET \"TZ=Pacific/Nauru\" && npx jest --runInBand",
     "test:default": "TZ=Pacific/Nauru npx jest --runInBand",
     "postinstall": "skip-postinstall || npm run api:load",
-    "prepare": "husky"
+    "prepare": "husky",
+  "start": "npm --no-autorestart --cron-restart=\"0 0,12 * * *\" -- run grab --site=web.magentatv.de"
   },
   "private": true,
   "author": "Arhey",
