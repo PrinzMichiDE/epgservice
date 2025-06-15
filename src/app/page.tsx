@@ -224,20 +224,7 @@ export default function Home() {
             >
               IPTV Player öffnen
             </button>
-            <a
-              href="/tv"
-              download
-              className="button"
-              style={{
-                marginTop: 8,
-                background: 'linear-gradient(90deg, #818cf8 0%, #6366f1 100%)',
-                color: '#fff',
-                textDecoration: 'none',
-                display: 'inline-block',
-              }}
-            >
-              IPTV Playlist herunterladen
-            </a>
+            
           </div>
           {showDisclaimer && (
             <div style={{
