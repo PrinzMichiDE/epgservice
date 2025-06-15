@@ -1,28 +1,28 @@
 import { NextResponse } from 'next/server';
 import { epgService } from '@/services/epgService';
-import { VercelCronJob } from '@vercel/cron';
 
-export const config = {
-  runtime: 'edge',
-};
+export const runtime = 'nodejs';
 
-export default async function handler() {
-  try {
-    console.log('Starte EPG-Datenaktualisierung...');
-    await epgService.updateEPGData();
-    console.log('EPG-Datenaktualisierung abgeschlossen');
-    return NextResponse.json({ success: true });
-  } catch (error) {
-    console.error('Fehler bei der EPG-Datenaktualisierung:', error);
-    return NextResponse.json(
-      { error: 'Fehler beim Aktualisieren der EPG-Daten' },
-      { status: 500 }
-    );
-  }
+// Prüfe, ob der Request von einem autorisierten Cron-Service kommt
+function isAuthorized(request: Request): boolean {
+  const authHeader = request.headers.get('authorization');
+  return authHeader === `Bearer ${process.env.CRON_SECRET}`;
 }
 
-// Vercel Cron-Konfiguration - Aktualisierung alle 4 Stunden
-export const cron = new VercelCronJob({
-  pattern: '0 */4 * * *',
-  handler,
-}); 
+export async function GET(request: Request) {
+  try {
+    // Prüfe die Autorisierung
+    if (!isAuthorized(request)) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    console.log('Starte EPG-Update via Cron...');
+    await epgService.updateEPGData();
+    console.log('EPG-Update erfolgreich abgeschlossen');
+
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error('Fehler beim EPG-Update:', error);
+    return NextResponse.json({ error: 'Fehler beim EPG-Update' }, { status: 500 });
+  }
+} 

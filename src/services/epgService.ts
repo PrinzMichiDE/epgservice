@@ -3,15 +3,15 @@ import { epgDownloader } from './epgDownloader';
 import { dbService } from './dbService';
 
 class EPGService {
-  public async getEPGData(currentOnly: boolean = false): Promise<EPGData> {
+  public async getEPGData(): Promise<EPGData> {
     try {
       console.log('Hole EPG-Daten aus der Datenbank...');
-      const data = await dbService.getEPGData(currentOnly);
+      const data = await dbService.getEPGData();
       
       if (!data.channels.length && !data.programs.length) {
         console.log('Keine Daten in der Datenbank gefunden, starte Download...');
         await this.updateEPGData();
-        return await dbService.getEPGData(currentOnly);
+        return await dbService.getEPGData();
       }
       
       return data;
@@ -31,7 +31,8 @@ class EPGService {
       }
       
       console.log(`Speichere ${data.channels.length} Kanäle und ${data.programs.length} Programme...`);
-      await dbService.saveEPGData(data);
+      await dbService.saveEPGData(data.channels, data.programs);
+      await dbService.setLastUpdate(Date.now());
       console.log('EPG-Update erfolgreich abgeschlossen');
     } catch (error) {
       console.error('Fehler beim EPG-Update:', error);
@@ -40,15 +41,11 @@ class EPGService {
   }
 
   public getChannels() {
-    return dbService.getChannels();
+    return dbService.getAllChannels();
   }
 
   public getProgramsByChannel(channelId: string) {
     return dbService.getProgramsByChannel(channelId);
-  }
-
-  public getCurrentPrograms() {
-    return dbService.getCurrentPrograms();
   }
 }
 

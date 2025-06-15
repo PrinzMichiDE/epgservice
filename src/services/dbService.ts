@@ -1,16 +1,24 @@
 import Database from 'better-sqlite3';
-import { EPGData } from '../types/epg';
+import fs from 'fs';
+import { Channel, Program } from '@/types/epg';
 
-class DBService {
-  private db: Database.Database;
+const DB_PATH = 'data/epg.db';
+const UPDATE_FILE = 'data/last_update.json';
+
+export class DBService {
+  private db: InstanceType<typeof Database>;
 
   constructor() {
-    this.db = new Database('epg.db');
-    this.initDatabase();
+    // Stelle sicher, dass das data-Verzeichnis existiert
+    if (!fs.existsSync('data')) {
+      fs.mkdirSync('data', { recursive: true });
+    }
+
+    this.db = new Database(DB_PATH);
+    this.initDB();
   }
 
-  private initDatabase() {
-    // Erstelle Tabellen, falls sie nicht existieren
+  private initDB() {
     this.db.exec(`
       CREATE TABLE IF NOT EXISTS channels (
         id TEXT PRIMARY KEY,
@@ -19,141 +27,92 @@ class DBService {
       );
 
       CREATE TABLE IF NOT EXISTS programs (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        channel_id TEXT NOT NULL,
-        start TEXT NOT NULL,
-        stop TEXT NOT NULL,
+        id TEXT PRIMARY KEY,
+        channel TEXT NOT NULL,
         title TEXT NOT NULL,
         description TEXT,
-        category TEXT,
-        episode TEXT,
-        FOREIGN KEY (channel_id) REFERENCES channels(id),
-        UNIQUE(channel_id, start, title)
+        start INTEGER NOT NULL,
+        stop INTEGER NOT NULL,
+        FOREIGN KEY (channel) REFERENCES channels(id)
       );
 
-      CREATE INDEX IF NOT EXISTS idx_programs_channel_start ON programs(channel_id, start);
+      CREATE INDEX IF NOT EXISTS idx_programs_channel ON programs(channel);
+      CREATE INDEX IF NOT EXISTS idx_programs_start ON programs(start);
     `);
   }
 
-  public getEPGData(): EPGData {
-    try {
-      const channels = this.db.prepare('SELECT * FROM channels ORDER BY name').all();
-      console.log('Gefundene Kanäle:', channels.length);
+  async saveEPGData(channels: Channel[], programs: Program[]) {
+    const insertChannel = this.db.prepare(`
+      INSERT OR REPLACE INTO channels (id, name, icon)
+      VALUES (@id, @name, @icon)
+    `);
 
-      const programs = this.db.prepare(`
-        SELECT p.*, c.name as channel_name, c.icon as channel_icon
-        FROM programs p
-        JOIN channels c ON p.channel_id = c.id
-        ORDER BY c.name, p.start
-      `).all();
-      console.log('Gefundene Programme:', programs.length);
+    const insertProgram = this.db.prepare(`
+      INSERT OR REPLACE INTO programs (id, channel, title, description, start, stop)
+      VALUES (@id, @channel, @title, @description, @start, @stop)
+    `);
 
-      if (channels.length === 0 || programs.length === 0) {
-        console.error('Keine Daten in der Datenbank gefunden');
-        return { channels: [], programs: [] };
-      }
-
-      return {
-        channels: channels.map(channel => ({
-          id: String(channel.id),
-          name: String(channel.name),
-          icon: channel.icon ? String(channel.icon) : null
-        })),
-        programs: programs.map(program => ({
-          channel: String(program.channel_id),
-          start: String(program.start),
-          stop: String(program.stop),
-          title: String(program.title),
-          description: program.description ? String(program.description) : null,
-          category: program.category ? String(program.category) : null,
-          episode: program.episode ? String(program.episode) : null
-        }))
-      };
-    } catch (error) {
-      console.error('Fehler beim Abrufen der EPG-Daten:', error);
-      return { channels: [], programs: [] };
-    }
-  }
-
-  public saveEPGData(data: EPGData) {
-    const { channels, programs } = data;
-
-    // Beginne eine Transaktion
-    const transaction = this.db.transaction(() => {
-      // Lösche alte Programme
-      this.db.prepare('DELETE FROM programs').run();
-
-      // Füge neue Kanäle hinzu
-      const insertChannel = this.db.prepare(`
-        INSERT OR REPLACE INTO channels (id, name, icon)
-        VALUES (?, ?, ?)
-      `);
-
-      // Füge neue Programme hinzu
-      const insertProgram = this.db.prepare(`
-        INSERT OR IGNORE INTO programs (channel_id, start, stop, title, description, category, episode)
-        VALUES (?, ?, ?, ?, ?, ?, ?)
-      `);
-
-      // Verarbeite Kanäle
+    const insertManyChannels = this.db.transaction((channels: Channel[]) => {
       for (const channel of channels) {
-        try {
-          insertChannel.run(
-            String(channel.id),
-            String(channel.name),
-            channel.icon ? String(channel.icon) : null
-          );
-        } catch (error) {
-          console.error(`Fehler beim Einfügen des Kanals ${channel.id}:`, error);
-        }
-      }
-
-      // Verarbeite Programme
-      for (const program of programs) {
-        try {
-          insertProgram.run(
-            String(program.channel),
-            String(program.start),
-            String(program.stop),
-            String(program.title),
-            program.description ? String(program.description) : null,
-            program.category ? String(program.category) : null,
-            program.episode ? String(program.episode) : null
-          );
-        } catch (error) {
-          console.error(`Fehler beim Einfügen des Programms ${program.title}:`, error);
-        }
+        insertChannel.run(channel);
       }
     });
 
-    // Führe die Transaktion aus
-    transaction();
+    const insertManyPrograms = this.db.transaction((programs: Program[]) => {
+      for (const program of programs) {
+        insertProgram.run(program);
+      }
+    });
+
+    try {
+      insertManyChannels(channels);
+      insertManyPrograms(programs);
+      return true;
+    } catch (error) {
+      console.error('Fehler beim Speichern der EPG-Daten:', error);
+      return false;
+    }
   }
 
-  public getCurrentPrograms(): any[] {
-    const now = new Date().toISOString();
+  async getEPGData() {
+    const channels = this.db.prepare('SELECT * FROM channels ORDER BY name').all() as Channel[];
+    const programs = this.db.prepare('SELECT * FROM programs').all() as Program[];
+    return { channels, programs };
+  }
+
+  async getAllChannels() {
+    return this.db.prepare('SELECT * FROM channels ORDER BY name').all() as Channel[];
+  }
+
+  async getProgramsByChannel(channelId: string) {
     return this.db.prepare(`
-      SELECT p.*, c.name as channel_name, c.icon as channel_icon
-      FROM programs p
-      JOIN channels c ON p.channel_id = c.id
-      WHERE p.start <= ? AND p.stop >= ?
-      ORDER BY c.name, p.start
-    `).all(now, now);
+      SELECT * FROM programs 
+      WHERE channel = ? 
+      ORDER BY start
+    `).all(channelId) as Program[];
   }
 
-  public getProgramsByChannel(channelId: string): any[] {
-    return this.db.prepare(`
-      SELECT p.*, c.name as channel_name, c.icon as channel_icon
-      FROM programs p
-      JOIN channels c ON p.channel_id = c.id
-      WHERE c.id = ?
-      ORDER BY p.start
-    `).all(channelId);
+  async getLastUpdate() {
+    try {
+      if (!fs.existsSync(UPDATE_FILE)) {
+        return null;
+      }
+      const data = JSON.parse(fs.readFileSync(UPDATE_FILE, 'utf-8'));
+      return data.lastUpdate;
+    } catch (error) {
+      console.error('Fehler beim Lesen des letzten Updates:', error);
+      return null;
+    }
   }
 
-  public getAllChannels(): any[] {
-    return this.db.prepare('SELECT * FROM channels ORDER BY name').all();
+  async setLastUpdate(timestamp: number) {
+    try {
+      fs.writeFileSync(UPDATE_FILE, JSON.stringify({ lastUpdate: timestamp }));
+      return true;
+    } catch (error) {
+      console.error('Fehler beim Speichern des letzten Updates:', error);
+      return false;
+    }
   }
 }
-
-export const dbService = new DBService(); 
+export const dbService = new DBService();
