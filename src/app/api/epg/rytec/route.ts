@@ -2,6 +2,16 @@ import { NextResponse } from 'next/server';
 import { getAllChannels, getAllPrograms } from '@/services/dbService';
 import type { Channel, Program } from '@/types/epg';
 
+function escapeXml(unsafe: string | undefined): string {
+  if (!unsafe) return '';
+  return unsafe
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&apos;');
+}
+
 // Automatisches Mapping: "DE: Das Erste" → "DasErste.de"
 function autoRytecId(id: string): string {
   // Beispiel-Mapping, ggf. erweitern
@@ -27,10 +37,10 @@ export async function GET() {
     '<!DOCTYPE tv SYSTEM "xmltv.dtd">',
     `<tv generator-info-name="Rytec XMLTV" source-info-name="xmltv.info">`,
     ...mappedChannels.map(
-      (c) => `  <channel id="${c.id}">\n    <display-name lang="de">${c.name}</display-name>${c.icon ? `\n    <icon src=\"${c.icon}\"/>` : ''}\n  </channel>`
+      (c) => `  <channel id="${escapeXml(c.id)}">\n    <display-name lang="de">${escapeXml(c.name)}</display-name>${c.icon ? `\n    <icon src=\"${escapeXml(c.icon)}\"/>` : ''}\n  </channel>`
     ),
     ...mappedPrograms.map(
-      (p) => `  <programme start="${p.start}" stop="${p.stop}" channel="${p.channel}">\n    <title lang="de">${p.title}</title>${p.description ? `\n    <desc lang=\"de\">${p.description}</desc>` : ''}${p.category ? `\n    <category lang=\"de\">${p.category}</category>` : ''}${p.episode ? `\n    <episode-num>${p.episode}</episode-num>` : ''}\n  </programme>`
+      (p) => `  <programme start="${escapeXml(p.start)}" stop="${escapeXml(p.stop)}" channel="${escapeXml(p.channel)}">\n    <title lang="de">${escapeXml(p.title)}</title>${p.description ? `\n    <desc lang=\"de\">${escapeXml(p.description)}</desc>` : ''}${p.category ? `\n    <category lang=\"de\">${escapeXml(p.category)}</category>` : ''}${p.episode ? `\n    <episode-num>${escapeXml(p.episode)}</episode-num>` : ''}\n  </programme>`
     ),
     '</tv>'
   ].join('\n');
