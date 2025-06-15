@@ -34,7 +34,8 @@ interface XMLTVData {
 class EPGDownloader {
   private sources = [
     'https://xmltv.info/de/epg.xml',
-    'https://epg.pw/xmltv/epg_DE.xml'
+    'https://epg.pw/xmltv/epg_DE.xml',
+    'https://vav00.de/sources/epg/epg_de.xml'
   ];
 
   public async downloadAll(): Promise<EPGData> {
