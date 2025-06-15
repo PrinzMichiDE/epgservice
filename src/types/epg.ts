@@ -5,6 +5,7 @@ export interface Channel {
 }
 
 export interface Program {
+  id?: string;
   channel: string;
   start: string;
   stop: string;
