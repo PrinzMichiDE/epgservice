@@ -35,7 +35,8 @@ class EPGDownloader {
   private sources = [
     'https://xmltv.info/de/epg.xml',
     'https://epg.pw/xmltv/epg_DE.xml',
-    'https://vav00.de/sources/epg/epg_de.xml'
+    'https://vav00.de/sources/epg/epg_de.xml',
+    'https://epgshare01.online/epgshare01/epg_ripper_DE1.xml'
   ];
 
   public async downloadAll(): Promise<EPGData> {

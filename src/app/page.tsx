@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { Analytics } from '@vercel/analytics/next';
 import { SpeedInsights } from '@vercel/speed-insights/next';
+import AuthButton from '@/components/AuthButton';
 
 export default function Home() {
   const [copied, setCopied] = useState(false);
@@ -120,6 +121,16 @@ export default function Home() {
         justifyContent: 'center',
         padding: 16,
       }}>
+        {/* Auth Button */}
+        <div style={{
+          position: 'absolute',
+          top: 90,
+          right: 20,
+          zIndex: 10,
+        }}>
+          <AuthButton />
+        </div>
+        
         <section className="card fade-in" style={{
           padding: '48px 32px',
           borderRadius: '22px',
@@ -197,8 +208,8 @@ export default function Home() {
               }}
             >
               Download XMLTV
-            </a>
-            <a
+        </a>
+        <a
               href={rytecUrl}
               download
               onClick={() => handleDownload('rytec')}
@@ -224,7 +235,62 @@ export default function Home() {
             >
               IPTV Player öffnen
             </button>
-            
+            <a
+              href="/player"
+              className="button"
+              style={{
+                marginTop: 8,
+                background: 'linear-gradient(90deg, #10b981 0%, #059669 100%)',
+                color: '#fff',
+                textDecoration: 'none',
+                display: 'inline-block',
+              }}
+            >
+              📺 Eingebauter Player
+            </a>
+          </div>
+          
+          {/* Premium Features Info */}
+          <div style={{
+            marginTop: '20px',
+            padding: '16px',
+            background: 'rgba(245, 158, 11, 0.1)',
+            borderRadius: '12px',
+            border: '1px solid rgba(245, 158, 11, 0.3)',
+            textAlign: 'center',
+          }}>
+            <h4 style={{
+              color: '#f59e0b',
+              fontSize: '1.1rem',
+              margin: '0 0 8px 0',
+              fontWeight: 600,
+            }}>
+              🔓 Premium-Features im Player
+            </h4>
+            <p style={{
+              color: '#f59e0b',
+              fontSize: '0.9rem',
+              margin: '0 0 12px 0',
+              lineHeight: 1.4,
+            }}>
+              Anonyme Benutzer: iptv-org Playlist (alle Kanäle)<br />
+              <strong>Eingeloggte Benutzer: +200 deutsche Premium-Kanäle</strong>
+            </p>
+            <a
+              href="/login"
+              className="button"
+              style={{
+                background: 'linear-gradient(90deg, #f59e0b 0%, #d97706 100%)',
+                color: '#fff',
+                textDecoration: 'none',
+                padding: '8px 20px',
+                fontSize: '0.9rem',
+                fontWeight: 600,
+                borderRadius: '8px',
+              }}
+            >
+              Anmelden für Premium-Zugang
+            </a>
           </div>
           {showDisclaimer && (
             <div style={{
@@ -282,8 +348,8 @@ export default function Home() {
           )}
           <a
             href="https://www.paypal.com/paypalme/michelfritzsch/5"
-            target="_blank"
-            rel="noopener noreferrer"
+          target="_blank"
+          rel="noopener noreferrer"
             className="button"
             style={{
               marginTop: 28,
@@ -301,7 +367,7 @@ export default function Home() {
             }}
           >
             Projekt unterstützen via <span style={{color:'#003087'}}>PayPal</span>
-          </a>
+        </a>
           <div style={{
             marginTop: 32,
             padding: '24px',
@@ -321,8 +387,8 @@ export default function Home() {
             </h3>
             <a
               href="https://www.amazon.de/hz/wishlist/ls/2K3UPHK4UWCXP?ref_=wl_share"
-              target="_blank"
-              rel="noopener noreferrer"
+          target="_blank"
+          rel="noopener noreferrer"
               className="button"
               style={{
                 background: 'linear-gradient(90deg, #ff9900 0%, #e47911 100%)',
@@ -370,7 +436,7 @@ export default function Home() {
               XMLTV Downloads: {stats.downloads.xmltv.toLocaleString()} &nbsp;|&nbsp; 
               Rytec Downloads: {stats.downloads.rytec.toLocaleString()}
             </div>
-          </div>
+    </div>
         </section>
       </main>
       <Analytics />
